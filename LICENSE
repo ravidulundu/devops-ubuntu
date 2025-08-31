@@ -1,0 +1,108 @@
+MIT License
+
+Copyright (c) 2024 WordPress Server Automation Project
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Additional Terms and Disclaimers:
+
+SECURITY DISCLAIMER:
+This software includes security features and tools designed for defensive 
+purposes only. Users are responsible for:
+- Proper configuration of security settings
+- Regular security updates and maintenance  
+- Compliance with applicable laws and regulations
+- Appropriate use of security features
+
+PERFORMANCE DISCLAIMER:
+Performance results may vary based on:
+- Hardware specifications and configuration
+- Network conditions and bandwidth
+- Software versions and compatibility
+- Workload characteristics and usage patterns
+- Environmental factors and system load
+
+The authors make no guarantees about specific performance metrics or results.
+
+BACKUP AND DATA DISCLAIMER:
+While this software includes backup and recovery features:
+- Users are solely responsible for their data
+- Additional backup strategies are recommended
+- Test restoration procedures regularly
+- Verify backup integrity periodically
+- Consider off-site backup storage
+
+THIRD-PARTY SOFTWARE:
+This project integrates with various third-party software packages including
+but not limited to:
+- OpenLiteSpeed Web Server
+- CyberPanel Control Panel
+- MariaDB Database Server
+- Redis Cache Server
+- WordPress Content Management System
+- Various PHP extensions and tools
+
+Each third-party component is subject to its own license terms and conditions.
+Users must comply with all applicable licenses.
+
+SUPPORT DISCLAIMER:
+This software is provided as-is without warranty or guaranteed support.
+Community support may be available through project channels, but professional
+support is not guaranteed or implied.
+
+MODIFICATION AND DISTRIBUTION:
+When modifying or distributing this software:
+- Retain all copyright notices and license terms
+- Document significant modifications
+- Provide attribution to original authors
+- Comply with all third-party license requirements
+
+USE AT YOUR OWN RISK:
+This software is intended for use by qualified system administrators and
+developers. Improper configuration or use may result in:
+- System instability or failure
+- Security vulnerabilities  
+- Data loss or corruption
+- Service interruptions
+- Legal or regulatory compliance issues
+
+Users assume all risks associated with the installation, configuration, and
+operation of this software.
+
+REGULATORY COMPLIANCE:
+Users are responsible for ensuring compliance with:
+- Data protection regulations (GDPR, CCPA, etc.)
+- Industry-specific requirements
+- Local and international laws
+- Security standards and frameworks
+- Hosting provider terms of service
+
+TRADEMARK NOTICE:
+WordPress is a trademark of the WordPress Foundation.
+OpenLiteSpeed is a trademark of LiteSpeed Technologies Inc.
+CyberPanel is a trademark of Cyber Infrastructure Inc.
+Other trademarks are the property of their respective owners.
+
+This project is not officially affiliated with, endorsed by, or sponsored by
+any of the trademark owners mentioned above.
+
+For questions about this license or the software, please refer to the project
+documentation or contact the project maintainers through official channels.
