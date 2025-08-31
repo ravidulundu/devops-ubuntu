@@ -339,7 +339,14 @@ detect_hardware() {
     AVAILABLE_DISK_GB=$(df -BG / | awk 'NR==2{print $4}' | sed 's/G//')
     
     # Network information
-    NETWORK_INTERFACE=$(ip route | grep default | awk '{print $5}' | head -n1)
+    if command -v ip >/dev/null 2>&1; then
+        NETWORK_INTERFACE=$(ip route | grep default | awk '{print $5}' | head -n1)
+    elif command -v route >/dev/null 2>&1; then
+        NETWORK_INTERFACE=$(route -n | grep '^0.0.0.0' | awk '{print $8}' | head -n1)
+    else
+        NETWORK_INTERFACE="eth0"  # Default fallback
+        log_warning "Neither 'ip' nor 'route' command available, using default interface: eth0"
+    fi
     
     log_info "Hardware Detection Results:"
     log_info "CPU: $CPU_MODEL ($CPU_CORES cores)"
