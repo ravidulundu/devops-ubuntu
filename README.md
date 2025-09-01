@@ -46,6 +46,44 @@ This project delivers an optimized server solution for WordPress websites with *
 - Email/Telegram alert integration
 - Historical data analysis
 
+## 📋 Installation Options
+
+### Production Installation (Recommended)
+```bash
+# Clone the repository
+git clone https://github.com/your-username/devops-ubuntu.git
+cd devops-ubuntu
+
+# Run production installation
+sudo ./install.sh
+
+# Configure for your environment
+sudo cp /opt/wp-automation/config/.env.example /opt/wp-automation/config/.env
+sudo vim /opt/wp-automation/config/.env
+
+# Deploy full server
+wp-automation all
+```
+
+### Development Installation
+```bash
+# Clone and install in development mode
+git clone https://github.com/your-username/devops-ubuntu.git
+cd devops-ubuntu
+./install.sh --dev
+
+# Configure and run
+cp config/.env.example config/.env
+vim config/.env
+./master.sh all
+```
+
+### Custom Installation Location
+```bash
+# Install to custom location
+sudo ./install.sh --prefix=/usr/local/wp-automation
+```
+
 ## 📋 Quick Start
 
 ### Prerequisites
@@ -69,25 +107,33 @@ cd devops-ubuntu
 # Make scripts executable
 chmod +x master.sh scripts/utils.sh modules/*.sh
 
-# Check system requirements and Ubuntu compatibility
+# Option 1: Production installation
+sudo ./install.sh
+wp-automation --status
+
+# Option 2: Development mode  
+./install.sh --dev
 ./master.sh --status
 ```
 
 ### 2️⃣ Full Deployment
 
 ```bash
-# Install and configure everything
+# Production: Install and configure everything
+wp-automation all
+
+# Development: Install and configure everything  
 ./master.sh all --force
 
-# Or step by step
-./master.sh install config security wp-automation monitoring dynamic-tuning
+# Or step by step (both modes)
+wp-automation install config security wp-automation monitoring dynamic-tuning
 ```
 
 ### 3️⃣ Post-Installation
 
 ```bash
-# View system status
-./master.sh --status
+# View system status (both modes)
+wp-automation --status  # or ./master.sh --status
 
 # Access monitoring dashboard
 server-dashboard
