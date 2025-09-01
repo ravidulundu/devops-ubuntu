@@ -34,6 +34,9 @@ DISK_THRESHOLD=90
 LOAD_THRESHOLD=5.0
 CONNECTION_THRESHOLD=1000
 
+# Operational settings
+QUIET_MODE=${QUIET_MODE:-false}
+
 # Load monitoring configuration
 load_monitoring_config() {
     log_info "Loading monitoring configuration..."
@@ -315,10 +318,10 @@ for log_info in "${LOG_FILES[@]}"; do
         lines=$(wc -l < "$log_file" 2>/dev/null || echo 0)
         
         # Count errors in last hour
-        errors=$(grep -c "$(date -d '1 hour ago' '+%Y-%m-%d %H')\|$(date '+%Y-%m-%d %H')" "$log_file" 2>/dev/null | grep -ci "error\|critical\|emergency\|alert" || echo 0)
+        errors=$(grep "$(date -d '1 hour ago' '+%Y-%m-%d %H')\|$(date '+%Y-%m-%d %H')" "$log_file" 2>/dev/null | grep -ci "error\|critical\|emergency\|alert" || echo 0)
         
         # Count warnings in last hour
-        warnings=$(grep -c "$(date -d '1 hour ago' '+%Y-%m-%d %H')\|$(date '+%Y-%m-%d %H')" "$log_file" 2>/dev/null | grep -ci "warning\|warn" || echo 0)
+        warnings=$(grep "$(date -d '1 hour ago' '+%Y-%m-%d %H')\|$(date '+%Y-%m-%d %H')" "$log_file" 2>/dev/null | grep -ci "warning\|warn" || echo 0)
         
         status="healthy"
         if [[ $errors -gt 10 ]]; then
@@ -512,106 +515,6 @@ should_send_alert() {
     
     return 1
 }
-
-# Process system metrics
-METRICS_FILE="__MONITORING_DATA_DIR__/system-metrics.json"
-if [[ -f "$METRICS_FILE" ]]; then
-    CPU_USAGE=$(jq -r '.cpu.usage' "$METRICS_FILE" 2>/dev/null || echo 0)
-    MEMORY_USAGE=$(jq -r '.memory.usage_percent' "$METRICS_FILE" 2>/dev/null || echo 0)
-    DISK_USAGE=$(jq -r '.disk.root.usage_percent' "$METRICS_FILE" 2>/dev/null || echo 0)
-    LOAD_1MIN=$(jq -r '.load."1min"' "$METRICS_FILE" 2>/dev/null || echo 0)
-    
-    # CPU Alert
-    if (( $(echo "$CPU_USAGE > __CPU_THRESHOLD__" | bc -l) )) && should_send_alert "CPU_HIGH"; then
-        ALERT_MSG="⚠️ <b>HIGH CPU USAGE ALERT</b>
-
-🖥️ Server: $(hostname)
-📊 CPU Usage: ${CPU_USAGE}%
-🎯 Threshold: __CPU_THRESHOLD__%
-⏰ Time: $(date)
-
-Please check server performance immediately."
-        
-        send_email_alert "High CPU Usage Alert - $(hostname)" "$ALERT_MSG"
-        send_telegram_alert "$ALERT_MSG"
-        log_alert "WARNING" "High CPU usage: ${CPU_USAGE}%"
-    fi
-    
-    # Memory Alert
-    if (( $(echo "$MEMORY_USAGE > __MEMORY_THRESHOLD__" | bc -l) )) && should_send_alert "MEMORY_HIGH"; then
-        ALERT_MSG="⚠️ <b>HIGH MEMORY USAGE ALERT</b>
-
-🖥️ Server: $(hostname)
-📊 Memory Usage: ${MEMORY_USAGE}%
-🎯 Threshold: __MEMORY_THRESHOLD__%
-⏰ Time: $(date)
-
-Please check memory consumption immediately."
-        
-        send_email_alert "High Memory Usage Alert - $(hostname)" "$ALERT_MSG"
-        send_telegram_alert "$ALERT_MSG"
-        log_alert "WARNING" "High memory usage: ${MEMORY_USAGE}%"
-    fi
-    
-    # Disk Alert
-    if (( $(echo "$DISK_USAGE > __DISK_THRESHOLD__" | bc -l) )) && should_send_alert "DISK_HIGH"; then
-        ALERT_MSG="🚨 <b>HIGH DISK USAGE ALERT</b>
-
-🖥️ Server: $(hostname)
-💾 Disk Usage: ${DISK_USAGE}%
-🎯 Threshold: __DISK_THRESHOLD__%
-⏰ Time: $(date)
-
-⚠️ Critical: Please free up disk space immediately!"
-        
-        send_email_alert "CRITICAL: High Disk Usage Alert - $(hostname)" "$ALERT_MSG"
-        send_telegram_alert "$ALERT_MSG"
-        log_alert "CRITICAL" "High disk usage: ${DISK_USAGE}%"
-    fi
-fi
-
-# Process security alerts
-SECURITY_FILE="__MONITORING_DATA_DIR__/security-status.json"
-if [[ -f "$SECURITY_FILE" ]]; then
-    SECURITY_STATUS=$(jq -r '.security_status' "$SECURITY_FILE" 2>/dev/null || echo "unknown")
-    FAILED_LOGINS=$(jq -r '.metrics.failed_logins_last_hour' "$SECURITY_FILE" 2>/dev/null || echo 0)
-    
-    if [[ "$SECURITY_STATUS" == "critical" ]] && should_send_alert "SECURITY_CRITICAL"; then
-        ALERT_MSG="🚨 <b>CRITICAL SECURITY ALERT</b>
-
-🖥️ Server: $(hostname)
-🛡️ Status: CRITICAL
-🚫 Failed Logins (1h): $FAILED_LOGINS
-⏰ Time: $(date)
-
-⚠️ Potential security breach detected!"
-        
-        send_email_alert "CRITICAL: Security Alert - $(hostname)" "$ALERT_MSG"
-        send_telegram_alert "$ALERT_MSG"
-        log_alert "CRITICAL" "Security status: $SECURITY_STATUS"
-    fi
-fi
-
-# Process service alerts
-SERVICES_FILE="__MONITORING_DATA_DIR__/services-status.json"
-if [[ -f "$SERVICES_FILE" ]]; then
-    STOPPED_SERVICES=$(jq -r '.services[] | select(.status == "stopped") | .name' "$SERVICES_FILE" 2>/dev/null || echo "")
-    
-    if [[ -n "$STOPPED_SERVICES" ]] && should_send_alert "SERVICES_DOWN"; then
-        ALERT_MSG="🚨 <b>SERVICES DOWN ALERT</b>
-
-🖥️ Server: $(hostname)
-🔴 Stopped Services:
-$(echo "$STOPPED_SERVICES" | sed 's/^/• /')
-⏰ Time: $(date)
-
-Please restart the services immediately!"
-        
-        send_email_alert "Services Down Alert - $(hostname)" "$ALERT_MSG"
-        send_telegram_alert "$ALERT_MSG"
-        log_alert "CRITICAL" "Services down: $STOPPED_SERVICES"
-    fi
-fi
 EOF
 
     # Replace placeholders

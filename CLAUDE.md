@@ -25,6 +25,8 @@ The system follows a modular architecture with 7 core bash script modules:
 - **Hardware-aware optimization**: Dynamic tuning based on server resources (RAM, CPU, disk)
 - **Security-first approach**: Dynamic IP whitelisting via Cloudflare API integration
 - **Extensible architecture**: Base interfaces designed for future expansion
+- **DevOps Best Practices**: Environment-driven configuration, externalized secrets, and configurable defaults
+- **Configuration-as-Code**: Global configuration management with environment-specific overrides
 
 ## Special Features
 
@@ -47,6 +49,35 @@ Currently in planning phase with PRD completed. Implementation requires:
 - Ubuntu 22.04 system administration
 - WordPress deployment automation via WP-CLI
 
+## DevOps Configuration
+
+### Environment-Driven Configuration
+All hardcoded values have been externalized to support DevOps best practices:
+
+- **Configuration Files**: `config/global.conf` for system-wide settings
+- **Environment Overrides**: `config/.env` for environment-specific values
+- **Default Values**: Built-in fallbacks with sensible defaults
+- **Secret Management**: Externalized passwords and sensitive data
+
+### Configuration Hierarchy
+```
+1. Built-in defaults (fallback values)
+2. global.conf settings 
+3. .env file overrides (environment-specific)
+4. Environment variables (runtime overrides)
+```
+
+### Example Environment Configuration
+```bash
+# Copy .env.example to .env and customize
+cp config/.env.example config/.env
+
+# Key configurable values:
+DATABASE_HOST="mysql.internal"
+WP_DEFAULT_ADMIN_EMAIL="admin@yourcompany.com"
+REDIS_BIND_ADDRESS="redis.internal"
+```
+
 ## Security Considerations
 
 - All scripts implement defense-in-depth security
@@ -55,3 +86,4 @@ Currently in planning phase with PRD completed. Implementation requires:
 - WAF implementation via OpenLiteSpeed or ModSecurity
 - Automated backup and rollback capabilities
 - UFW firewall with default deny policy
+- Externalized secrets and credentials

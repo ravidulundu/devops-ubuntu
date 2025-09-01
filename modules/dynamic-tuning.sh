@@ -612,6 +612,19 @@ case "${1:-}" in
             echo "No profile currently active"
         fi
         ;;
+    "analyze")
+        echo "Analyzing current system performance..."
+        __TUNING_SCRIPT__ analyze-system
+        ;;
+    "generate")
+        profile="${2:-}"
+        if [[ -z "$profile" ]]; then
+            echo "Error: Profile name required"
+            exit 1
+        fi
+        echo "Generating new tuning profile: $profile"
+        __TUNING_SCRIPT__ generate-profile "$profile"
+        ;;
     "apply")
         profile="${2:-}"
         if [[ -z "$profile" ]]; then
@@ -627,6 +640,14 @@ case "${1:-}" in
             exit 1
         fi
         __TUNING_SCRIPT__ run-benchmark "$profile"
+        ;;
+    "revert")
+        echo "Reverting to previous configuration..."
+        __TUNING_SCRIPT__ revert-config
+        ;;
+    "compare")
+        echo "Comparing performance between profiles..."
+        __TUNING_SCRIPT__ compare-profiles
         ;;
     "monitor")
         echo "Starting performance monitor..."

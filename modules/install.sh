@@ -219,7 +219,7 @@ EOF
     cat > "$CONFIG_DIR/mysql.conf" <<EOF
 MYSQL_ROOT_PASSWORD="$mysql_root_password"
 MYSQL_ROOT_USER="root"
-MYSQL_HOST="localhost"
+MYSQL_HOST="${DATABASE_HOST:-localhost}"
 MYSQL_PORT="3306"
 EOF
     
@@ -334,7 +334,7 @@ install_cyberpanel() {
     cat > cyberpanel_install.conf <<EOF
 # CyberPanel Unattended Installation Configuration
 install_type=1
-admin_email=admin@localhost
+admin_email=${DEFAULT_ADMIN_EMAIL:-admin@example.com}
 admin_pass=$cp_admin_password
 memcached=y
 redis=y
@@ -362,7 +362,7 @@ EOF
     cat > "$CONFIG_DIR/cyberpanel.conf" <<EOF
 CP_ADMIN_USER="$CYBERPANEL_ADMIN_USER"
 CP_ADMIN_PASSWORD="$cp_admin_password"
-CP_ADMIN_EMAIL="$CYBERPANEL_ADMIN_USER@localhost"
+CP_ADMIN_EMAIL="${DEFAULT_ADMIN_EMAIL:-$CYBERPANEL_ADMIN_USER@example.com}"
 CP_ADMIN_PORT="$CYBERPANEL_PORT"
 CP_INSTALL_PATH="/usr/local/CyberCP"
 EOF

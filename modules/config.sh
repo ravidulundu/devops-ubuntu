@@ -107,7 +107,7 @@ autoFix503                1
 gracefulRestartTimeout    300
 mime                      \$SERVER_ROOT/conf/mime.properties
 showVersionNumber         0
-adminEmails               admin@localhost
+adminEmails               ${DEFAULT_ADMIN_EMAIL:-admin@example.com}
 indexFiles                index.html, index.php
 disableWebAdmin           0
 
@@ -465,7 +465,7 @@ opcache.blacklist_filename=
 
 ; Session Settings
 session.save_handler = redis
-session.save_path = "tcp://127.0.0.1:6379"
+session.save_path = "tcp://${REDIS_BIND_ADDRESS:-127.0.0.1}:6379"
 session.use_strict_mode = 0
 session.use_cookies = 1
 session.use_only_cookies = 1
@@ -538,7 +538,7 @@ basedir = /usr
 datadir = /var/lib/mysql
 tmpdir = /tmp
 lc-messages-dir = /usr/share/mysql
-bind-address = 127.0.0.1
+bind-address = ${MYSQL_BIND_ADDRESS:-127.0.0.1}
 
 # Connection Settings
 max_connections = $max_connections
@@ -690,7 +690,7 @@ loglevel notice
 logfile /var/log/redis/redis-server.log
 
 # Security
-bind 127.0.0.1 ::1
+bind ${REDIS_BIND_ADDRESS:-127.0.0.1} ::1
 protected-mode yes
 EOF
         

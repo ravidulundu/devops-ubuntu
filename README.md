@@ -37,6 +37,7 @@ This project delivers an optimized server solution for WordPress websites with *
 - Self-healing monitoring with smart alerts
 - Hardware-based dynamic tuning
 - Automated backups and updates
+- DevOps-compliant configuration management
 
 📊 **Real-Time Monitoring**
 - Comprehensive system metrics dashboard
@@ -94,6 +95,37 @@ server-dashboard
 # Manage WordPress sites
 wp-manage.sh list-sites
 ```
+
+## ⚙️ Configuration Management
+
+### Environment-Driven Configuration
+All hardcoded values have been externalized to support DevOps best practices:
+
+```bash
+# Copy and customize environment configuration
+cp config/.env.example config/.env
+vim config/.env
+
+# Example environment-specific settings
+DATABASE_HOST="mysql.internal"
+WP_DEFAULT_ADMIN_EMAIL="admin@yourcompany.com"
+REDIS_BIND_ADDRESS="redis.internal"
+DEFAULT_ADMIN_EMAIL="ops@yourcompany.com"
+```
+
+### Configuration Hierarchy
+1. **Built-in defaults** - Sensible fallback values
+2. **global.conf** - System-wide configuration
+3. **.env file** - Environment-specific overrides  
+4. **Environment variables** - Runtime overrides
+
+### Key Configurable Settings
+- Database connection settings
+- Email addresses and SMTP configuration
+- SSL/TLS certificate settings
+- Performance tuning parameters
+- Security policy settings
+- Monitoring thresholds and alerts
 
 ## 🔧 Ubuntu Version Compatibility
 

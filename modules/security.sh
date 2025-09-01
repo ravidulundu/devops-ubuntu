@@ -134,8 +134,8 @@ mode = normal
 filter = %(__name__)s[mode=%(mode)s]
 
 # Actions
-destemail = admin@localhost
-sender = fail2ban@localhost
+destemail = ${DEFAULT_ADMIN_EMAIL:-admin@example.com}
+sender = ${DEFAULT_SENDER_EMAIL:-fail2ban@example.com}
 mta = sendmail
 protocol = tcp
 chain = <known/chain>

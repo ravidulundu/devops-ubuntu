@@ -28,7 +28,7 @@ WP_TEMP_DIR="/tmp/wp-automation"
 
 # Default WordPress configuration
 WP_DEFAULT_ADMIN_USER="wpadmin"
-WP_DEFAULT_ADMIN_EMAIL="admin@localhost"
+WP_DEFAULT_ADMIN_EMAIL="${WP_DEFAULT_ADMIN_EMAIL:-admin@example.com}"
 WP_DEFAULT_PLUGINS=(
     "redis-cache"
     "wp-super-cache" 
@@ -81,7 +81,7 @@ EOF
 WP_DB_NAME="$db_name"
 WP_DB_USER="$db_user"
 WP_DB_PASSWORD="$db_password"
-WP_DB_HOST="localhost"
+WP_DB_HOST="${WP_DB_HOST:-localhost}"
 WP_DB_PREFIX="wp_"
 EOF
     
@@ -116,13 +116,13 @@ install_wordpress() {
         
         # Create wp-config.php
         log_info "Creating WordPress configuration..."
-        execute_command "wp config create --dbname='$db_name' --dbuser='$db_user' --dbpass='$db_password' --dbhost='localhost' --dbprefix='wp_' --allow-root" "Creating WordPress config"
+        execute_command "wp config create --dbname='$db_name' --dbuser='$db_user' --dbpass='$db_password' --dbhost='${WP_DB_HOST:-localhost}' --dbprefix='wp_' --allow-root" "Creating WordPress config"
         
         # Add Redis cache configuration
         cat >> wp-config.php <<'EOF'
 
 // Redis Cache Configuration
-define('WP_REDIS_HOST', '127.0.0.1');
+define('WP_REDIS_HOST', '${REDIS_BIND_ADDRESS:-127.0.0.1}');
 define('WP_REDIS_PORT', 6379);
 define('WP_REDIS_TIMEOUT', 1);
 define('WP_REDIS_READ_TIMEOUT', 1);
@@ -228,7 +228,7 @@ configure_wp_caching() {
             cat >> wp-config.php <<'EOF'
 
 // Redis Cache Configuration
-define('WP_REDIS_HOST', '127.0.0.1');
+define('WP_REDIS_HOST', '${REDIS_BIND_ADDRESS:-127.0.0.1}');
 define('WP_REDIS_PORT', 6379);
 define('WP_REDIS_TIMEOUT', 1);
 define('WP_REDIS_READ_TIMEOUT', 1);
