@@ -694,6 +694,7 @@ show_recent_alerts
 echo -e "${CYAN}================================================================${NC}"
 echo -e "${CYAN}  Dashboard updated: $(date)${NC}"
 echo -e "${CYAN}  Use 'watch -n 30 $0' for auto-refresh${NC}"
+echo -e "${YELLOW}  Quick log access: 'wp-logs' | 'wp-logs-follow' | 'wp-logs-errors'${NC}"
 echo -e "${CYAN}================================================================${NC}"
 EOF
 

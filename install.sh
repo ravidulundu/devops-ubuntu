@@ -195,7 +195,33 @@ exec "$INSTALL_PREFIX/master.sh" all "\$@"
 EOF
         chmod +x /usr/local/bin/wp-deploy
         
-        log_success "System commands created: wp-automation, wp-server-status, wp-deploy"
+        # Create log viewing commands
+        cat > /usr/local/bin/wp-logs <<EOF
+#!/bin/bash
+exec "$INSTALL_PREFIX/scripts/logs.sh" "\$@"
+EOF
+        chmod +x /usr/local/bin/wp-logs
+        
+        # Create convenient log viewing aliases
+        cat > /usr/local/bin/wp-logs-follow <<EOF
+#!/bin/bash
+exec "$INSTALL_PREFIX/scripts/logs.sh" --follow all
+EOF
+        chmod +x /usr/local/bin/wp-logs-follow
+        
+        cat > /usr/local/bin/wp-logs-errors <<EOF
+#!/bin/bash
+exec "$INSTALL_PREFIX/scripts/logs.sh" --search "error\\|Error\\|ERROR" all
+EOF
+        chmod +x /usr/local/bin/wp-logs-errors
+        
+        cat > /usr/local/bin/wp-logs-tail <<EOF
+#!/bin/bash
+exec "$INSTALL_PREFIX/scripts/logs.sh" --lines 100 all
+EOF
+        chmod +x /usr/local/bin/wp-logs-tail
+        
+        log_success "System commands created: wp-automation, wp-server-status, wp-deploy, wp-logs"
     fi
 }
 
@@ -237,6 +263,10 @@ main() {
         log_info "  wp-automation --status         # System status"
         log_info "  wp-deploy                      # Quick deploy alias"
         log_info "  wp-server-status               # Quick status alias"
+        log_info "  wp-logs                        # View all logs"
+        log_info "  wp-logs-follow                 # Follow all logs in real-time"
+        log_info "  wp-logs-errors                 # Show only error entries"
+        log_info "  wp-logs-tail                   # Show last 100 lines"
         echo
         log_info "Installation directory: $INSTALL_PREFIX"
         log_info "Logs directory: /var/log/wp-automation"

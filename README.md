@@ -439,6 +439,45 @@ server-dashboard
 - Service health status
 - Security event summary
 
+### 📋 Log Management
+
+**Single Command Log Viewing:**
+
+```bash
+# View all logs (last 50 lines)
+wp-logs
+
+# Follow all logs in real-time (like tail -f)
+wp-logs-follow
+
+# Show only error entries across all logs
+wp-logs-errors
+
+# Show last 100 lines of all logs
+wp-logs-tail
+```
+
+**Advanced Log Options:**
+
+```bash
+# View specific log files
+wp-logs automation          # Main system log
+wp-logs mysql               # Database errors  
+wp-logs fail2ban            # Security events
+wp-logs openlitespeed       # Web server errors
+
+# Search for specific terms
+wp-logs -s "error" all      # Search for "error" in all logs
+wp-logs -s "fail" fail2ban  # Search for "fail" in security log
+
+# Custom line counts and following
+wp-logs -n 200 automation   # Show last 200 lines
+wp-logs -f mysql            # Follow MySQL log in real-time
+
+# List all available logs
+wp-logs --list
+```
+
 ### Alert System
 
 **Configurable thresholds:**
