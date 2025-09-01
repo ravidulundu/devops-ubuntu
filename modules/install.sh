@@ -8,8 +8,10 @@
 
 set -euo pipefail
 
-# Source utilities
+# Source utilities and set paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_DIR="$SCRIPT_DIR/../config"
+LOGS_DIR="$SCRIPT_DIR/../logs"
 source "$SCRIPT_DIR/../scripts/utils.sh"
 
 # Module information
@@ -51,13 +53,57 @@ PYTHON_PACKAGES=(
     "python3-setuptools"
 )
 
-# Database packages
-DATABASE_PACKAGES=(
-    "mariadb-server"
-    "mariadb-client"
-    "redis-server"
-    "memcached"
-)
+# Set version-specific packages based on Ubuntu version
+set_version_specific_packages() {
+    local ubuntu_version=$(detect_ubuntu_version)
+    
+    case "$ubuntu_version" in
+        "20.04")
+            DATABASE_PACKAGES=(
+                "mysql-server"
+                "mysql-client"
+                "redis-server"
+                "memcached"
+            )
+            DEFAULT_PHP_VERSIONS=("7.4" "8.0")
+            ;;
+        "22.04")
+            DATABASE_PACKAGES=(
+                "mariadb-server"
+                "mariadb-client"
+                "redis-server"
+                "memcached"
+            )
+            DEFAULT_PHP_VERSIONS=("8.1" "8.2")
+            ;;
+        "24.04"|"25."*)
+            DATABASE_PACKAGES=(
+                "mariadb-server"
+                "mariadb-client"
+                "redis-server"
+                "memcached"
+            )
+            DEFAULT_PHP_VERSIONS=("8.2" "8.3")
+            ;;
+        *)
+            # Default fallback
+            DATABASE_PACKAGES=(
+                "mariadb-server"
+                "mariadb-client"
+                "redis-server"
+                "memcached"
+            )
+            DEFAULT_PHP_VERSIONS=("8.1" "8.2")
+            ;;
+    esac
+    
+    log_info "Configured packages for Ubuntu $ubuntu_version"
+    log_info "Database: ${DATABASE_PACKAGES[0]}"
+    log_info "PHP versions: ${DEFAULT_PHP_VERSIONS[*]}"
+}
+
+# Initialize version-specific packages
+set_version_specific_packages
 
 log_info "Starting $MODULE_NAME v$MODULE_VERSION"
 
@@ -76,9 +122,9 @@ pre_install_checks() {
         fi
     fi
     
-    # Check system compatibility
-    if ! grep -q "Ubuntu" /etc/os-release; then
-        log_error "This installation script is designed for Ubuntu systems"
+    # Check system compatibility (now handled by utils.sh)
+    if ! check_ubuntu_compatibility; then
+        log_error "Ubuntu compatibility check failed"
         return 1
     fi
     
@@ -231,8 +277,8 @@ install_php() {
     execute_command "add-apt-repository ppa:ondrej/php -y" "Adding PHP repository"
     execute_command "apt-get update" "Updating package list"
     
-    # Install multiple PHP versions
-    local php_versions=("8.1" "8.2")
+    # Install multiple PHP versions (use version-specific defaults)
+    local php_versions=("${DEFAULT_PHP_VERSIONS[@]}")
     
     for version in "${php_versions[@]}"; do
         log_info "Installing PHP $version..."

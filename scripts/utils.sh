@@ -75,14 +75,101 @@ check_root() {
     fi
 }
 
+# Ubuntu version compatibility detection
+detect_ubuntu_version() {
+    if [[ ! -f /etc/os-release ]]; then
+        log_error "Cannot detect OS version - /etc/os-release not found"
+        return 1
+    fi
+    
+    local version_id=$(grep '^VERSION_ID=' /etc/os-release | cut -d'"' -f2)
+    echo "$version_id"
+}
+
+# Check Ubuntu version compatibility
+check_ubuntu_compatibility() {
+    local detected_version=$(detect_ubuntu_version)
+    
+    if [[ -z "$detected_version" ]]; then
+        log_error "Failed to detect Ubuntu version"
+        return 1
+    fi
+    
+    case "$detected_version" in
+        "22.04")
+            log_success "Running on Ubuntu 22.04 LTS - Fully supported and tested"
+            return 0
+            ;;
+        "24.04")
+            log_info "Running on Ubuntu 24.04 LTS - Supported with minor adjustments"
+            log_warning "Some package versions may differ from tested configuration"
+            return 0
+            ;;
+        "20.04")
+            log_warning "Running on Ubuntu 20.04 LTS - Limited support"
+            log_warning "Some features may require manual configuration"
+            return 0
+            ;;
+        "25.04"|"25.10")
+            log_info "Running on Ubuntu $detected_version - Experimental support"
+            log_warning "This version is newer than tested configurations"
+            return 0
+            ;;
+        *)
+            if grep -q "Ubuntu" /etc/os-release; then
+                log_warning "Running on Ubuntu $detected_version - Untested version"
+                log_warning "Proceed with caution - compatibility not guaranteed"
+                return 0
+            else
+                log_error "This script requires Ubuntu Linux (detected: non-Ubuntu system)"
+                return 1
+            fi
+            ;;
+    esac
+}
+
+# Get version-specific package names and configurations
+get_version_specific_config() {
+    local detected_version=$(detect_ubuntu_version)
+    
+    case "$detected_version" in
+        "20.04")
+            # Older PHP versions available
+            export PREFERRED_PHP_VERSION="7.4"
+            export MYSQL_PACKAGE="mysql-server"
+            ;;
+        "22.04")
+            # Standard configuration
+            export PREFERRED_PHP_VERSION="8.1"
+            export MYSQL_PACKAGE="mariadb-server"
+            ;;
+        "24.04"|"25."*)
+            # Newer versions with updated packages
+            export PREFERRED_PHP_VERSION="8.2"
+            export MYSQL_PACKAGE="mariadb-server"
+            # Additional repositories may be needed for some packages
+            ;;
+        *)
+            # Default fallback
+            export PREFERRED_PHP_VERSION="8.1"
+            export MYSQL_PACKAGE="mariadb-server"
+            ;;
+    esac
+}
+
 # Check system requirements
 check_system_requirements() {
     log_info "Checking system requirements..."
     
-    # Check OS version
-    if ! grep -q "Ubuntu 22.04" /etc/os-release; then
-        log_warning "This script is optimized for Ubuntu 22.04. Current OS may not be fully supported."
+    # Check Ubuntu version compatibility
+    if ! check_ubuntu_compatibility; then
+        log_error "Ubuntu version compatibility check failed"
+        return 1
     fi
+    
+    # Load version-specific configuration
+    get_version_specific_config
+    log_info "Configured for PHP $PREFERRED_PHP_VERSION and $MYSQL_PACKAGE"
     
     # Check available memory
     local available_memory=$(free -m | awk 'NR==2{print $2}')
@@ -221,7 +308,8 @@ get_public_ip() {
 is_port_available() {
     local port=$1
     
-    if netstat -tuln | grep -q ":$port "; then
+    # Use ss command (modern replacement for netstat)
+    if ss -tuln | grep -q ":$port "; then
         return 1  # Port is in use
     else
         return 0  # Port is available

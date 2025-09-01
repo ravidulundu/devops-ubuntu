@@ -8,8 +8,10 @@
 
 set -euo pipefail
 
-# Source utilities
+# Source utilities and set paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_DIR="$SCRIPT_DIR/../config"
+LOGS_DIR="$SCRIPT_DIR/../logs"
 source "$SCRIPT_DIR/../scripts/utils.sh"
 
 # Module information

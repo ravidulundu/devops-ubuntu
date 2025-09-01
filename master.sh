@@ -87,7 +87,7 @@ EOF
 show_version() {
     echo "$SCRIPT_NAME version $SCRIPT_VERSION"
     echo "Author: $SCRIPT_AUTHOR"
-    echo "Target OS: Ubuntu 22.04"
+    echo "Supported OS: Ubuntu 20.04, 22.04, 24.04, 25.04+"
     echo "Dependencies: OpenLiteSpeed, CyberPanel, WordPress"
 }
 

@@ -1,9 +1,9 @@
 # WordPress Server Automation
 
-**High-Performance, Security-First WordPress Hosting Infrastructure on Ubuntu 22.04**
+**High-Performance, Security-First WordPress Hosting Infrastructure for Multiple Ubuntu Versions**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Ubuntu](https://img.shields.io/badge/ubuntu-22.04-orange.svg)](https://ubuntu.com/)
+[![Ubuntu](https://img.shields.io/badge/ubuntu-20.04%20|%2022.04%20|%2024.04%20|%2025.04+-orange.svg)](https://ubuntu.com/)
 [![OpenLiteSpeed](https://img.shields.io/badge/web%20server-OpenLiteSpeed-green.svg)](https://openlitespeed.org/)
 [![CyberPanel](https://img.shields.io/badge/control%20panel-CyberPanel-blue.svg)](https://cyberpanel.net/)
 
@@ -13,7 +13,7 @@
 
 ## 🎯 Overview
 
-This project delivers an optimized server solution for WordPress websites running on Ubuntu 22.04, utilizing OpenLiteSpeed and CyberPanel. The solution provides automated installation, maintenance, and monitoring through modular Bash scripts, ensuring high performance, robust security, and sustainable management.
+This project delivers an optimized server solution for WordPress websites with **multi-version Ubuntu support** (20.04, 22.04, 24.04, 25.04+), utilizing OpenLiteSpeed and CyberPanel. The solution provides automated installation, maintenance, and monitoring through modular Bash scripts, ensuring high performance, robust security, and sustainable management.
 
 ### ✨ Key Features
 
@@ -21,8 +21,8 @@ This project delivers an optimized server solution for WordPress websites runnin
 - Hardware-aware optimization with automatic tuning
 - OpenLiteSpeed web server with advanced caching
 - Redis + Memcached multi-layer caching
-- PHP 8.1/8.2 with OPcache optimization
-- MariaDB with InnoDB tuning
+- Version-specific PHP optimization (7.4/8.0/8.1/8.2/8.3)
+- MariaDB/MySQL with InnoDB tuning (version-dependent)
 
 🔒 **Enterprise Security**
 - Dynamic IP whitelisting via Cloudflare integration
@@ -49,7 +49,11 @@ This project delivers an optimized server solution for WordPress websites runnin
 
 ### Prerequisites
 
-- **Ubuntu 22.04 LTS** server with root access
+- **Ubuntu LTS Server** with root access:
+  - ✅ **Ubuntu 22.04 LTS** (Fully supported - recommended)
+  - ✅ **Ubuntu 24.04 LTS** (Fully supported with auto-adjustments)
+  - ⚠️ **Ubuntu 20.04 LTS** (Limited support)
+  - 🧪 **Ubuntu 25.04+** (Experimental support)
 - **Minimum**: 2 CPU cores, 2GB RAM, 20GB disk
 - **Recommended**: 4+ CPU cores, 4GB+ RAM, 50GB+ SSD
 - Stable internet connection
@@ -64,7 +68,7 @@ cd devops-ubuntu
 # Make scripts executable
 chmod +x master.sh scripts/utils.sh modules/*.sh
 
-# Check system requirements
+# Check system requirements and Ubuntu compatibility
 ./master.sh --status
 ```
 
@@ -90,6 +94,24 @@ server-dashboard
 # Manage WordPress sites
 wp-manage.sh list-sites
 ```
+
+## 🔧 Ubuntu Version Compatibility
+
+### Automatic Version Detection
+The automation scripts automatically detect your Ubuntu version and adjust configurations accordingly:
+
+| Ubuntu Version | Support Level | PHP Versions | Database | Notes |
+|---|---|---|---|---|
+| **20.04 LTS** | ⚠️ Limited | PHP 7.4, 8.0 | MySQL | Legacy support |
+| **22.04 LTS** | ✅ Full | PHP 8.1, 8.2 | MariaDB | **Recommended** |
+| **24.04 LTS** | ✅ Full | PHP 8.2, 8.3 | MariaDB | Auto-adjustments |
+| **25.04+** | 🧪 Experimental | PHP 8.2, 8.3 | MariaDB | Latest features |
+
+### Version-Specific Features
+- **Automatic package selection**: Scripts choose appropriate packages for your Ubuntu version
+- **PHP version optimization**: Installs the best PHP versions available for your OS
+- **Database compatibility**: Handles MySQL vs MariaDB differences automatically
+- **Smart fallbacks**: Graceful handling of version-specific package availability
 
 ## 🏗️ Architecture
 
@@ -390,6 +412,18 @@ TELEGRAM_NOTIFICATIONS=false
 
 ## 🚨 Troubleshooting
 
+### Recent Fixes & Known Issues
+
+#### ✅ Fixed: "CONFIG_DIR: unbound variable" Error
+**Issue**: All modules were failing with "CONFIG_DIR: unbound variable" errors.  
+**Status**: **RESOLVED** - All modules now properly initialize directory paths.  
+**Action**: Update to latest version if experiencing this issue.
+
+#### ✅ Fixed: netstat Command Not Found
+**Issue**: Port availability checks failing on Ubuntu 22.04+.  
+**Status**: **RESOLVED** - Replaced with modern `ss` command.  
+**Action**: No action needed in latest version.
+
 ### Common Issues
 
 #### Installation Fails
@@ -549,6 +583,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Cloudflare** for robust DNS API services
 - **WordPress** community for the amazing CMS platform
 - **Ubuntu** team for the solid server foundation
+
+## 🆕 Recent Updates
+
+### Version Compatibility Improvements
+- ✅ **Multi-Ubuntu Support**: Added support for Ubuntu 20.04, 22.04, 24.04, and 25.04+
+- ✅ **Automatic Version Detection**: Scripts now detect and adapt to your Ubuntu version
+- ✅ **Version-Specific Packages**: PHP and database packages selected automatically
+- ✅ **Smart Compatibility Warnings**: Clear messaging about support levels
+
+### Bug Fixes
+- 🐛 **Fixed CONFIG_DIR Error**: Resolved "unbound variable" errors in all modules
+- 🐛 **Fixed netstat Issues**: Replaced deprecated netstat with modern ss command
+- 🐛 **Improved Error Handling**: Better error messages and debugging information
+
+### Enhanced Documentation
+- 📚 **Updated README**: Added Ubuntu compatibility matrix and troubleshooting
+- 📚 **Improved CLAUDE.md**: Enhanced development guidelines and debugging tips
+- 📚 **Better Error Messages**: More helpful error reporting throughout scripts
+
+---
 
 ## 📞 Support
 
