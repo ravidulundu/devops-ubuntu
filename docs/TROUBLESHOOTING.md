@@ -879,7 +879,7 @@ tar -czf /backup/wordpress-sites.tar.gz /usr/local/lsws/Example/html/
 mysqldump --all-databases > /backup/all-databases.sql
 
 # 5. Backup configurations
-tar -czf /backup/configurations.tar.gz /workspace/devops-ubuntu/config/
+tar -czf /backup/configurations.tar.gz /opt/wp-automation/config/
 
 # 6. Fresh installation
 git clone <repository> /opt/wordpress-automation-new
@@ -929,12 +929,12 @@ df -h
 systemctl status lsws mysql redis-server
 
 # Error logs (last 50 lines)
-tail -50 /workspace/devops-ubuntu/logs/automation.log
+tail -50 /opt/wp-automation/logs/automation.log
 tail -50 /usr/local/lsws/logs/error.log
 tail -50 /var/log/mysql/error.log
 
 # Configuration
-cat /workspace/devops-ubuntu/config/global.conf
+cat /opt/wp-automation/config/global.conf
 ```
 
 ### Support Channels

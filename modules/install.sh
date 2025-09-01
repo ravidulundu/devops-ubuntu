@@ -446,7 +446,7 @@ EOF
     
     # Set up log rotation
     cat > "/etc/logrotate.d/server-automation" <<EOF
-/workspace/devops-ubuntu/logs/*.log {
+${LOG_DIR:-/var/log/wp-automation}/*.log {
     daily
     missingok
     rotate 30

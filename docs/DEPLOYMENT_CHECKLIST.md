@@ -404,7 +404,7 @@ sslscan yourdomain.com
 wp-manage.sh backup yourdomain.com
 
 # Verify backup files created
-ls -la /workspace/devops-ubuntu/backups/wordpress/yourdomain.com/
+ls -la /opt/wp-automation/backups/wordpress/yourdomain.com/
 
 # Test database backup
 mysqldump -u root -p yourdomain_wp > test-backup.sql

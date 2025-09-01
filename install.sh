@@ -8,10 +8,17 @@
 
 set -euo pipefail
 
-# Default installation paths
+# Default installation paths - Linux FHS compliant
 DEFAULT_PREFIX="/opt/wp-automation"
 DEV_MODE=false
 INSTALL_PREFIX="$DEFAULT_PREFIX"
+
+# Linux FHS standard directories
+FHS_CONFIG_DIR="/etc/wp-automation"
+FHS_LOG_DIR="/var/log/wp-automation"
+FHS_DATA_DIR="/var/lib/wp-automation"
+FHS_BACKUP_DIR="/var/backups/wp-automation"
+FHS_RUNTIME_DIR="/var/run/wp-automation"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -103,21 +110,31 @@ create_directories() {
     mkdir -p "$INSTALL_PREFIX/docs"
     
     if [[ "$DEV_MODE" == false ]]; then
-        # Production directories
-        mkdir -p /var/log/wp-automation
-        mkdir -p /var/lib/wp-automation
-        mkdir -p /opt/wp-automation/backups
+        # Linux FHS compliant production directories
+        mkdir -p "$FHS_CONFIG_DIR"
+        mkdir -p "$FHS_LOG_DIR"
+        mkdir -p "$FHS_DATA_DIR"
+        mkdir -p "$FHS_BACKUP_DIR"
+        mkdir -p "$FHS_RUNTIME_DIR"
         
-        # Set proper permissions
+        # Set FHS-appropriate permissions
         chmod 755 "$INSTALL_PREFIX"
-        chmod 755 /var/log/wp-automation
-        chmod 755 /var/lib/wp-automation
-        chmod 755 /opt/wp-automation/backups
+        chmod 755 "$FHS_CONFIG_DIR"
+        chmod 755 "$FHS_LOG_DIR"
+        chmod 755 "$FHS_DATA_DIR"
+        chmod 700 "$FHS_BACKUP_DIR"  # Secure backups
+        chmod 755 "$FHS_RUNTIME_DIR"
+        
+        # Copy configuration to FHS location
+        if [[ -d "$INSTALL_PREFIX/config" ]]; then
+            cp -r "$INSTALL_PREFIX/config"/* "$FHS_CONFIG_DIR/"
+        fi
     else
-        # Development directories
+        # Development directories (portable)
         mkdir -p "$INSTALL_PREFIX/logs"
         mkdir -p "$INSTALL_PREFIX/backups" 
         mkdir -p "$INSTALL_PREFIX/data"
+        mkdir -p "$INSTALL_PREFIX/run"
     fi
     
     log_success "Directories created successfully"

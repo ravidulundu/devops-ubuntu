@@ -586,7 +586,7 @@ fail2ban-client status
 
 | Component | Log Location |
 |-----------|-------------|
-| **Main System** | `/workspace/devops-ubuntu/logs/automation.log` |
+| **Main System** | `/var/log/wp-automation/automation.log` |
 | **OpenLiteSpeed** | `/usr/local/lsws/logs/error.log` |
 | **MariaDB** | `/var/log/mysql/error.log` |
 | **Security** | `/var/log/fail2ban.log` |
@@ -596,7 +596,7 @@ fail2ban-client status
 ## 🗂️ Directory Structure
 
 ```
-/workspace/devops-ubuntu/
+/opt/wp-automation/
 ├── master.sh                    # Main orchestration script
 ├── scripts/
 │   └── utils.sh                # Shared utility functions
