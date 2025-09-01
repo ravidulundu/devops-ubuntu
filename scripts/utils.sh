@@ -29,11 +29,27 @@ log() {
     local message=$2
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     
-    # Create log directory if it doesn't exist
-    mkdir -p "$LOG_DIR"
+    # Ensure LOG_DIR is set, fallback to a default location
+    if [[ -z "$LOG_DIR" ]]; then
+        if [[ -n "$LOGS_DIR" ]]; then
+            LOG_DIR="$LOGS_DIR"
+        else
+            # Fallback to script directory
+            local fallback_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../logs"
+            LOG_DIR="$fallback_dir"
+        fi
+    fi
     
-    # Log to file
-    echo "[$timestamp] [$level] $message" >> "$LOG_DIR/automation.log"
+    # Create log directory if it doesn't exist
+    if ! mkdir -p "$LOG_DIR" 2>/dev/null; then
+        # If we can't create the log directory, skip file logging
+        echo "Warning: Cannot create log directory $LOG_DIR" >&2
+    else
+        # Log to file with error handling
+        if ! echo "[$timestamp] [$level] $message" >> "$LOG_DIR/automation.log" 2>/dev/null; then
+            echo "Warning: Cannot write to log file $LOG_DIR/automation.log" >&2
+        fi
+    fi
     
     # Log to console based on level
     case $level in
@@ -224,23 +240,65 @@ enable_service() {
     fi
 }
 
-# Install package if not already installed
-install_package() {
+# Check if package has available updates
+check_package_updates() {
     local package=$1
     
-    if dpkg -l | grep -q "^ii  $package "; then
-        log_info "Package $package is already installed"
-        return 0
+    # Update package cache if older than 1 hour
+    local cache_file="/var/cache/apt/pkgcache.bin"
+    if [[ ! -f "$cache_file" ]] || [[ $(find "$cache_file" -mmin +60 2>/dev/null | wc -l) -gt 0 ]]; then
+        log_debug "Updating package cache..."
+        apt-get update -qq >/dev/null 2>&1
     fi
     
-    log_info "Installing package: $package"
+    # Check if package has updates available
+    local upgradeable=$(apt list --upgradeable 2>/dev/null | grep "^$package/" | wc -l)
+    return $([[ $upgradeable -eq 0 ]] && echo 1 || echo 0)
+}
+
+# Smart package installation - handles installation, updates, and version checking
+install_package() {
+    local package=$1
+    local force_reinstall=${2:-false}
     
-    if apt-get update && apt-get install -y "$package"; then
-        log_success "Package $package installed successfully"
-        return 0
+    # Check if package is installed
+    if dpkg -l | grep -q "^ii  $package "; then
+        local installed_version=$(dpkg-query -W -f='${Version}' "$package" 2>/dev/null)
+        
+        if [[ $force_reinstall == "true" ]]; then
+            log_info "Force reinstalling package: $package"
+            if apt-get install --reinstall -y "$package" >/dev/null 2>&1; then
+                log_success "Package $package reinstalled successfully"
+                return 0
+            else
+                log_error "Failed to reinstall package: $package"
+                return 1
+            fi
+        elif check_package_updates "$package"; then
+            log_info "Updating package: $package (current: $installed_version)"
+            if apt-get install -y "$package" >/dev/null 2>&1; then
+                local new_version=$(dpkg-query -W -f='${Version}' "$package" 2>/dev/null)
+                log_success "Package $package updated successfully ($installed_version → $new_version)"
+                return 0
+            else
+                log_error "Failed to update package: $package"
+                return 1
+            fi
+        else
+            log_debug "Package $package is already installed and up-to-date ($installed_version)"
+            return 0
+        fi
     else
-        log_error "Failed to install package: $package"
-        return 1
+        # Package not installed, install it
+        log_info "Installing package: $package"
+        if apt-get install -y "$package" >/dev/null 2>&1; then
+            local new_version=$(dpkg-query -W -f='${Version}' "$package" 2>/dev/null)
+            log_success "Package $package installed successfully ($new_version)"
+            return 0
+        else
+            log_error "Failed to install package: $package"
+            return 1
+        fi
     fi
 }
 

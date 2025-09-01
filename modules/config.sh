@@ -47,6 +47,38 @@ configure_openlitespeed() {
     # Create backup
     create_backup "$ols_conf"
     
+    # Detect available PHP version
+    local php_version=""
+    local php_path=""
+    
+    # Check for installed PHP versions in order of preference
+    for version in "${DEFAULT_PHP_VERSIONS[@]}" "8.3" "8.2" "8.1" "8.0" "7.4"; do
+        if [[ -d "/usr/local/lsws/lsphp${version//./}" ]]; then
+            php_version="${version//./}"
+            php_path="/usr/local/lsws/lsphp${php_version}/bin/lsphp"
+            break
+        fi
+    done
+    
+    # Fallback to any available PHP version
+    if [[ -z "$php_path" ]]; then
+        for php_dir in /usr/local/lsws/lsphp*/; do
+            if [[ -d "$php_dir" && -f "${php_dir}bin/lsphp" ]]; then
+                php_path="${php_dir}bin/lsphp"
+                php_version=$(basename "$php_dir" | sed 's/lsphp//')
+                break
+            fi
+        done
+    fi
+    
+    # Final fallback
+    if [[ -z "$php_path" ]]; then
+        log_error "No PHP installation found for OpenLiteSpeed"
+        return 1
+    fi
+    
+    log_info "Using PHP path: $php_path (version: $php_version)"
+    
     # Calculate optimal settings based on hardware
     local worker_processes=$((CPU_CORES * 2))
     local max_connections=$((TOTAL_RAM_MB * 2))
@@ -181,7 +213,7 @@ extprocessor lsphp82 {
     pcKeepAliveTimeout      1
     respBuffer              0
     autoStart               1
-    path                    /usr/local/lsws/lsphp82/bin/lsphp
+    path                    $php_path
     backlog                 100
     instances               1
     priority                0

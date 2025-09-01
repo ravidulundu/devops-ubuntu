@@ -657,7 +657,7 @@ EOF
 # WordPress Management Helper Script
 
 show_usage() {
-    cat << EOF
+    cat << 'USAGE_EOF'
 Usage: $0 [command] [site] [options]
 
 Commands:
@@ -675,7 +675,7 @@ Examples:
     $0 update demo
     $0 cache-flush demo
     $0 security-check
-EOF
+USAGE_EOF
 }
 
 WP_SITES_DIR="/usr/local/lsws/Example/html"

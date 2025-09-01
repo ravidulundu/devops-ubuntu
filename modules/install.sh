@@ -307,8 +307,12 @@ install_php() {
         log_success "PHP $version installed successfully"
     done
     
-    # Set default PHP version
-    execute_command "ln -sf /usr/local/lsws/lsphp82/bin/lsphp /usr/local/lsws/fcgi-bin/lsphp8" "Setting default PHP version"
+    # Set default PHP version (use the first/preferred version)
+    if [[ ${#php_versions[@]} -gt 0 ]]; then
+        local default_php_version="${php_versions[0]//./}"
+        local default_php_path="/usr/local/lsws/lsphp${default_php_version}/bin/lsphp"
+        execute_command "ln -sf $default_php_path /usr/local/lsws/fcgi-bin/lsphp8" "Setting default PHP version to ${php_versions[0]}"
+    fi
     
     log_success "PHP installation completed"
 }

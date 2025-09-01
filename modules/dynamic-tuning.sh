@@ -567,8 +567,8 @@ TUNING_PROFILES_DIR="$TUNING_DIR/profiles"
 TUNING_SCRIPTS_DIR="$TUNING_DIR/scripts"
 
 show_usage() {
-    cat << EOF
-Usage: $0 [command] [options]
+    cat << 'USAGE_EOF'
+Usage: \$0 [command] [options]
 
 Commands:
     list-profiles       List all available tuning profiles
@@ -582,12 +582,12 @@ Commands:
     compare             Compare performance between profiles
 
 Examples:
-    $0 list-profiles
-    $0 generate high-performance
-    $0 apply high-performance
-    $0 benchmark high-performance
-    $0 monitor
-EOF
+    \$0 list-profiles
+    \$0 generate high-performance
+    \$0 apply high-performance
+    \$0 benchmark high-performance
+    \$0 monitor
+USAGE_EOF
 }
 
 case "${1:-}" in

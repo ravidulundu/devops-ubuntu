@@ -39,6 +39,75 @@ tail -f /var/log/fail2ban.log
 
 ## 🔧 Installation Issues
 
+### Error: "CONFIG_DIR: unbound variable"
+
+**Symptoms:**
+```
+/home/user/devops-ubuntu/modules/install.sh: line 173: CONFIG_DIR: unbound variable
+[ERROR] Module failed: install
+```
+
+**Status:** ✅ **RESOLVED** in latest version
+
+**Solutions:**
+1. **Update to latest version** - This issue has been fixed
+2. **Manual fix** - Ensure modules properly source utilities:
+   ```bash
+   # Each module should have:
+   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+   CONFIG_DIR="$SCRIPT_DIR/../config"
+   LOGS_DIR="$SCRIPT_DIR/../logs"
+   source "$SCRIPT_DIR/../scripts/utils.sh"
+   ```
+
+### Error: "show_usage: command not found"
+
+**Symptoms:**
+```
+/usr/local/bin/wp-manage.sh: line 719: show_usage: command not found
+[ERROR] Module failed: wp-automation
+```
+
+**Status:** ✅ **RESOLVED** in latest version
+
+**Solutions:**
+1. **Update to latest version** - Heredoc syntax has been fixed
+2. **Manual fix** - Check for proper function definitions in heredocs
+
+### Error: OpenLiteSpeed PHP Configuration
+
+**Symptoms:**
+```
+[ERROR] invalid path - /usr/local/lsws/lsphp82/bin/lsphp, it cannot be started by Web server!
+[ERROR] Module failed: config
+```
+
+**Status:** ✅ **RESOLVED** in latest version
+
+**Solutions:**
+1. **Update to latest version** - Dynamic PHP detection implemented
+2. **Manual check** - Verify PHP installation:
+   ```bash
+   ls -la /usr/local/lsws/lsphp*/bin/lsphp
+   ```
+
+### Error: "netstat: command not found"
+
+**Symptoms:**
+```
+/scripts/utils.sh: line 224: netstat: command not found
+```
+
+**Status:** ✅ **RESOLVED** in latest version
+
+**Solutions:**
+1. **Update to latest version** - Replaced with `ss` command
+2. **Manual install**:
+   ```bash
+   sudo apt-get update
+   sudo apt-get install net-tools
+   ```
+
 ### Error: "System requirements not met"
 
 **Symptoms:**

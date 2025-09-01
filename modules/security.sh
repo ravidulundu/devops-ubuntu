@@ -442,8 +442,14 @@ setup_dynamic_ip_whitelisting() {
     
     # Check Cloudflare credentials
     if [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]] || [[ -z "${CLOUDFLARE_ZONE_ID:-}" ]]; then
-        log_error "Cloudflare API credentials not configured. Please set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID in $CLOUDFLARE_CONFIG_FILE"
-        return 1
+        log_warning "Cloudflare API credentials not configured - dynamic IP whitelisting will be disabled"
+        log_info "To enable dynamic IP whitelisting:"
+        log_info "1. Edit $CLOUDFLARE_CONFIG_FILE"
+        log_info "2. Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID"
+        log_info "3. Follow the instructions in the configuration file"
+        log_info "4. Re-run: ./master.sh security"
+        log_info "Continuing with static firewall configuration..."
+        return 0
     fi
     
     # Create IP update script
