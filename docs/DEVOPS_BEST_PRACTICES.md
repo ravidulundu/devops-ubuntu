@@ -71,6 +71,13 @@ Script defaults (lowest priority)
 - Alert fatigue prevention
 - Escalation procedures
 
+### 3. Log Management (NEW)
+- Single-command log access (`wp-logs`, `wp-logs-follow`)
+- Real-time log monitoring and following
+- Advanced search and filtering capabilities
+- Centralized log viewing across all services
+- Automated log rotation and retention
+
 ## Environment Management
 
 ### 1. Environment Separation
@@ -203,8 +210,10 @@ vim config/.env
 # Verify security configuration
 ./master.sh --status security
 
-# Monitor security events
-tail -f /var/log/fail2ban.log
+# Monitor security events - NEW APPROACH
+wp-logs-follow              # Follow all logs in real-time
+wp-logs fail2ban            # View security log specifically
+wp-logs -s "blocked" fail2ban # Search for blocked IPs
 ```
 
 ### Performance Tuning

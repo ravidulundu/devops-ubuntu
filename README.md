@@ -41,10 +41,19 @@ This project delivers an optimized server solution for WordPress websites with *
 
 📊 **Real-Time Monitoring**
 - Comprehensive system metrics dashboard
+- Single-command log viewing (`wp-logs`, `wp-logs-follow`)
 - Performance benchmarking and optimization
 - Security event monitoring
 - Email/Telegram alert integration
 - Historical data analysis
+
+🔧 **DevOps & Production Ready**
+- Linux FHS (Filesystem Hierarchy Standard) compliant
+- Environment-driven configuration management
+- Auto-detecting installation paths (development/production)
+- Professional installation system with system commands
+- Configuration-as-code with environment overrides
+- Externalized secrets and credentials
 
 ## 📋 Installation Options
 
@@ -138,6 +147,12 @@ wp-automation --status  # or ./master.sh --status
 # Access monitoring dashboard
 server-dashboard
 
+# Log management - NEW!
+wp-logs                    # View all logs
+wp-logs-follow            # Follow logs in real-time
+wp-logs-errors            # Show only errors
+wp-logs mysql             # View specific log
+
 # Manage WordPress sites
 wp-manage.sh list-sites
 ```
@@ -172,6 +187,35 @@ DEFAULT_ADMIN_EMAIL="ops@yourcompany.com"
 - Performance tuning parameters
 - Security policy settings
 - Monitoring thresholds and alerts
+
+## 🏗️ Production Architecture
+
+### Linux FHS Compliance
+The system follows **Linux Filesystem Hierarchy Standard** for production deployments:
+
+**Production Installation (`/opt/wp-automation`):**
+```
+/opt/wp-automation/           # Application files
+/etc/wp-automation/           # Configuration files  
+/var/log/wp-automation/       # Log files
+/var/lib/wp-automation/       # Application data
+/var/backups/wp-automation/   # Backup files
+/var/run/wp-automation/       # Runtime files
+```
+
+**System Commands Available:**
+- `wp-automation` - Main automation system
+- `wp-server-status` - Quick status check
+- `wp-deploy` - Full deployment alias
+- `wp-logs` - Comprehensive log viewing
+- `wp-logs-follow` - Real-time log monitoring
+- `wp-logs-errors` - Error-only log filtering
+
+### Auto-Detection Features
+- **Installation Type**: Automatically detects development vs production
+- **Path Management**: Uses appropriate directories based on installation location
+- **Permission Handling**: Sets correct Linux permissions automatically
+- **Service Integration**: Creates system-wide commands and aliases
 
 ## 🔧 Ubuntu Version Compatibility
 
