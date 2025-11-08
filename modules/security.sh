@@ -536,9 +536,12 @@ echo "$CURRENT_IP" > "$IP_FILE"
 log_message "SUCCESS" "Dynamic IP update completed successfully"
 EOF
 
-    # Replace placeholders with actual values
-    sed -i "s/__CLOUDFLARE_API_TOKEN__/$CLOUDFLARE_API_TOKEN/g" "/usr/local/bin/update-dynamic-ip.sh"
-    sed -i "s/__CLOUDFLARE_ZONE_ID__/$CLOUDFLARE_ZONE_ID/g" "/usr/local/bin/update-dynamic-ip.sh"
+    # Replace placeholders with actual values (escape special characters for sed)
+    # Use | as delimiter to avoid conflicts with / in tokens
+    local escaped_token=$(printf '%s\n' "$CLOUDFLARE_API_TOKEN" | sed 's/[&/\]/\\&/g')
+    local escaped_zone=$(printf '%s\n' "$CLOUDFLARE_ZONE_ID" | sed 's/[&/\]/\\&/g')
+    sed -i "s|__CLOUDFLARE_API_TOKEN__|$escaped_token|g" "/usr/local/bin/update-dynamic-ip.sh"
+    sed -i "s|__CLOUDFLARE_ZONE_ID__|$escaped_zone|g" "/usr/local/bin/update-dynamic-ip.sh"
     
     chmod +x "/usr/local/bin/update-dynamic-ip.sh"
     

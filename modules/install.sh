@@ -248,7 +248,18 @@ install_openlitespeed() {
     local ols_admin_password=$(generate_password 16)
     
     # Set OpenLiteSpeed admin credentials
-    execute_command "/usr/local/lsws/admin/misc/admpass.sh <<< $'$OLS_ADMIN_USER\\n$ols_admin_password\\n$ols_admin_password'" "Setting OpenLiteSpeed admin credentials"
+    log_info "Setting OpenLiteSpeed admin credentials..."
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[DRY RUN] Would execute: admpass.sh with user $OLS_ADMIN_USER"
+    else
+        printf "%s\n%s\n%s\n" "$OLS_ADMIN_USER" "$ols_admin_password" "$ols_admin_password" | /usr/local/lsws/admin/misc/admpass.sh
+        if [[ $? -eq 0 ]]; then
+            log_success "OpenLiteSpeed admin credentials set successfully"
+        else
+            log_error "Failed to set OpenLiteSpeed admin credentials"
+            return 1
+        fi
+    fi
     
     # Save credentials
     cat > "$CONFIG_DIR/openlitespeed.conf" <<EOF

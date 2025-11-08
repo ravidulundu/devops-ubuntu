@@ -119,7 +119,7 @@ install_wordpress() {
         execute_command "wp config create --dbname='$db_name' --dbuser='$db_user' --dbpass='$db_password' --dbhost='${WP_DB_HOST:-localhost}' --dbprefix='wp_' --allow-root" "Creating WordPress config"
         
         # Add Redis cache configuration
-        cat >> wp-config.php <<'EOF'
+        cat >> wp-config.php <<EOF
 
 // Redis Cache Configuration
 define('WP_REDIS_HOST', '${REDIS_BIND_ADDRESS:-127.0.0.1}');
@@ -225,7 +225,7 @@ configure_wp_caching() {
         
         # Update wp-config.php for Redis
         if ! grep -q "WP_REDIS_HOST" wp-config.php; then
-            cat >> wp-config.php <<'EOF'
+            cat >> wp-config.php <<EOF
 
 // Redis Cache Configuration
 define('WP_REDIS_HOST', '${REDIS_BIND_ADDRESS:-127.0.0.1}');
@@ -400,8 +400,8 @@ mysqldump -u "\$DB_USER" -p"\$DB_PASSWORD" "\$DB_NAME" | gzip > "\$BACKUP_DIR/da
 # Files backup
 tar -czf "\$BACKUP_DIR/files_\${DATE}.tar.gz" -C "\$(dirname "\$SITE_PATH")" "\$(basename "\$SITE_PATH")"
 
-# WordPress core backup
-wp db export "\$BACKUP_DIR/wp-export_\${DATE}.xml" --allow-root
+# WordPress database backup
+wp db export "\$BACKUP_DIR/wp-database_\${DATE}.sql" --allow-root
 
 # Cleanup old backups (keep last 7 days)
 find "\$BACKUP_DIR" -type f -mtime +7 -delete

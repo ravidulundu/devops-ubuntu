@@ -74,10 +74,13 @@ analyze_current_performance() {
         response_time=$(curl -o /dev/null -s -w "%{time_total}" "http://localhost/" 2>/dev/null || echo "0")
     fi
     
-    # Database query performance
+    # Database query performance (measure wall-clock time)
     local db_query_time="0"
     if [[ -n "${MYSQL_ROOT_PASSWORD:-}" ]]; then
-        db_query_time=$(mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT BENCHMARK(1000000, 1+1);" 2>/dev/null | grep -o "[0-9.]*" | tail -1 || echo "0")
+        local db_start=$(date +%s.%N)
+        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT BENCHMARK(1000000, 1+1);" >/dev/null 2>&1
+        local db_end=$(date +%s.%N)
+        db_query_time=$(echo "($db_end - $db_start) * 1000" | bc -l | cut -d. -f1)
     fi
     
     # Create performance analysis JSON
@@ -450,10 +453,10 @@ run_performance_benchmark() {
         sleep 10
     done
     
-    # Calculate averages
-    local avg_web_rps=$(echo "${results[@]}" | jq -s 'map(.web_requests_per_second | tonumber) | add / length')
-    local avg_response_time=$(echo "${results[@]}" | jq -s 'map(.web_response_time_ms | tonumber) | add / length')
-    local avg_db_qps=$(echo "${results[@]}" | jq -s 'map(.database_queries_per_second | tonumber) | add / length')
+    # Calculate averages (use printf for proper JSON array formatting)
+    local avg_web_rps=$(printf '%s\n' "${results[@]}" | jq -s 'map(.web_requests_per_second | tonumber) | add / length')
+    local avg_response_time=$(printf '%s\n' "${results[@]}" | jq -s 'map(.web_response_time_ms | tonumber) | add / length')
+    local avg_db_qps=$(printf '%s\n' "${results[@]}" | jq -s 'map(.database_queries_per_second | tonumber) | add / length')
     
     # Create benchmark results
     cat > "$benchmark_file" <<EOF
