@@ -52,7 +52,7 @@ configure_openlitespeed() {
     local php_path=""
     
     # Check for installed PHP versions in order of preference
-    for version in "${DEFAULT_PHP_VERSIONS[@]}" "8.3" "8.2" "8.1" "8.0" "7.4"; do
+    for version in "${DEFAULT_PHP_VERSIONS[@]:-}" "8.3" "8.2" "8.1" "8.0" "7.4"; do
         if [[ -d "/usr/local/lsws/lsphp${version//./}" ]]; then
             php_version="${version//./}"
             php_path="/usr/local/lsws/lsphp${php_version}/bin/lsphp"

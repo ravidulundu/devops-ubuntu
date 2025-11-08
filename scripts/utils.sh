@@ -253,7 +253,8 @@ check_package_updates() {
     
     # Check if package has updates available
     local upgradeable=$(apt list --upgradeable 2>/dev/null | grep "^$package/" | wc -l)
-    return $([[ $upgradeable -eq 0 ]] && echo 1 || echo 0)
+    [[ $upgradeable -gt 0 ]]
+    return $?
 }
 
 # Smart package installation - handles installation, updates, and version checking

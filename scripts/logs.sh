@@ -145,7 +145,7 @@ list_logs() {
         
         if [[ -f "$log_path" && -r "$log_path" ]]; then
             status="${GREEN}Available${NC}"
-            size=$(stat -f%z "$log_path" 2>/dev/null || stat -c%s "$log_path" 2>/dev/null || echo "0")
+            size=$(stat -c%s "$log_path" 2>/dev/null || echo "0")
             size_human=$(numfmt --to=iec "$size" 2>/dev/null || echo "${size}B")
             printf "%-20s %-40s %s (%s)\n" "$log_type" "$log_desc" "$status" "$size_human"
         else
@@ -166,9 +166,9 @@ show_log_header() {
     echo -e "${BLUE}File: $log_path${NC}"
     
     if [[ -f "$log_path" ]]; then
-        local size=$(stat -f%z "$log_path" 2>/dev/null || stat -c%s "$log_path" 2>/dev/null || echo "0")
+        local size=$(stat -c%s "$log_path" 2>/dev/null || echo "0")
         local size_human=$(numfmt --to=iec "$size" 2>/dev/null || echo "${size}B")
-        local mod_time=$(stat -f%Sm -t"%Y-%m-%d %H:%M:%S" "$log_path" 2>/dev/null || stat -c%y "$log_path" 2>/dev/null | cut -d. -f1 || echo "Unknown")
+        local mod_time=$(stat -c%y "$log_path" 2>/dev/null | cut -d. -f1 || echo "Unknown")
         echo -e "${BLUE}Size: $size_human | Modified: $mod_time${NC}"
     fi
     
